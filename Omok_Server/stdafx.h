@@ -33,8 +33,6 @@ public:
     WSABUF wsabuf;
     char wb_buf[BUFSIZE];
     TASK_TYPE ov;
-    int from;
-    int to;
 
     EXT_OVER() // recv
     {
@@ -42,10 +40,10 @@ public:
         wsabuf.buf = wb_buf;
         ov = TASK_TYPE::RECV;
         ZeroMemory(&over, sizeof(over));
+        ZeroMemory(&wb_buf, sizeof(wb_buf));
     }
 
-
-    void setup_send(char* pk, int len) // send
+    void setup_send(const char* pk, int len) // send
     {
         wsabuf.len = len;
         wsabuf.buf = wb_buf;
