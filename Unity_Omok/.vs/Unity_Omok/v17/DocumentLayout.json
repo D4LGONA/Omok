@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity\\Unity_Omok\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|c:\\users\\user\\onedrive\\\uBC14\uD0D5 \uD654\uBA74\\unity\\unity_omok\\assets\\scripts\\logic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\logic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Logic.cs",
+              "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity\\Unity_Omok\\Assets\\Scripts\\Logic.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Logic.cs",
+              "ToolTip": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity\\Unity_Omok\\Assets\\Scripts\\Logic.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Logic.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T03:17:44.351Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
