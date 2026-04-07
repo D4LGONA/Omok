@@ -4,103 +4,129 @@ using System.Collections.Generic;
 public class BoardRenderer : MonoBehaviour
 {
     [Header("Board Settings")]
-    public float cellSize = 1f;        // 격자 간격
     public int lineCount = 15;
-    public Color lineColor = Color.black;
-    public Color boardColor = new Color(0.85f, 0.65f, 0.3f); // 나무색
 
     [Header("Stone Prefabs")]
     public GameObject blackStonePrefab;
     public GameObject whiteStonePrefab;
 
-    private List<GameObject> spawnedStones = new();
+    [Header("Ghost Stone")]
+    public GameObject GhostPrefab;
 
-    private void Start()
+    private readonly List<GameObject> spawnedStones = new();
+    private int[,] board;
+
+    private GameObject ghost;
+
+    private const float MinX = -5.6f;
+    private const float MinY = -5.6f;
+    private const float MaxX = 5.6f;
+    private const float MaxY = 5.6f;
+
+    private float cellSizeX;
+    private float cellSizeY;
+
+    private void Awake()
     {
-        DrawBoard();
-    }
+        board = new int[lineCount, lineCount];
 
-    private void DrawBoard()
-    {
-        float boardLength = (lineCount - 1) * cellSize; // 14칸 = 실제 격자 크기
-        float padding = cellSize;                        // 테두리 여백
+        cellSizeX = (MaxX - MinX) / (lineCount - 1); // 0.8
+        cellSizeY = (MaxY - MinY) / (lineCount - 1); // 0.8
 
-        // 배경 크기 = 격자 + 양쪽 여백
-        float bgSize = boardLength + padding * 2;
-
-        GameObject bg = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        bg.transform.SetParent(transform);
-        bg.transform.localPosition = new Vector3(
-            boardLength / 2f,   // 격자 중앙
-            boardLength / 2f,
-            0.1f);
-        bg.transform.localScale = new Vector3(bgSize, bgSize, 1f);
-        bg.GetComponent<Renderer>().material.color = boardColor;
-        Destroy(bg.GetComponent<Collider>());
-
-        // 격자선 (변경 없음)
-        for (int i = 0; i < lineCount; i++)
+        if (GhostPrefab != null)
         {
-            CreateLine(
-                new Vector3(i * cellSize, 0, 0),
-                new Vector3(i * cellSize, boardLength, 0));
-            CreateLine(
-                new Vector3(0, i * cellSize, 0),
-                new Vector3(boardLength, i * cellSize, 0));
+            ghost = Instantiate(GhostPrefab, Vector3.zero, Quaternion.identity, transform);
+            ghost.SetActive(false);
         }
-
-        DrawStarPoints();
-    }
-
-    private void CreateLine(Vector3 start, Vector3 end)
-    {
-        GameObject go = new GameObject("Line");
-        go.transform.SetParent(transform);
-        var lr = go.AddComponent<LineRenderer>();
-        lr.material = new Material(Shader.Find("Sprites/Default"));
-        lr.startColor = lr.endColor = lineColor;
-        lr.startWidth = lr.endWidth = 0.05f;
-        lr.SetPositions(new Vector3[] { start, end });
-        lr.sortingOrder = 1;
-    }
-
-    private void DrawStarPoints()
-    {
-        int[] starCoords = { 3, 7, 11 }; // 15x15 기준 화점
-        foreach (int x in starCoords)
-            foreach (int y in starCoords)
-                DrawDot(x, y);
-    }
-
-    private void DrawDot(int x, int y)
-    {
-        GameObject dot = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        dot.transform.SetParent(transform);
-        dot.transform.localPosition = new Vector3(x * cellSize, y * cellSize, -0.01f);
-        dot.transform.localScale = Vector3.one * 0.15f;
-        dot.GetComponent<Renderer>().material.color = Color.black;
-        Destroy(dot.GetComponent<Collider>());
     }
 
     public void DrawStone(int x, int y, int player)
     {
-        var prefab = player == 1 ? blackStonePrefab : whiteStonePrefab;
-        var pos = new Vector3(x * cellSize, y * cellSize, -0.05f);
-        var stone = Instantiate(prefab, pos, Quaternion.identity, transform);
+        if (!IsInRange(x, y)) return;
+        if (board[x, y] != 0) return;
+
+        GameObject prefab = (player == 1) ? blackStonePrefab : whiteStonePrefab;
+
+        Vector3 pos = GridToWorld(x, y);
+        pos.z = -0.05f;
+
+        GameObject stone = Instantiate(prefab, pos, Quaternion.identity, transform);
         spawnedStones.Add(stone);
+
+        board[x, y] = player;
+    }
+
+    public bool HasStone(int x, int y)
+    {
+        if (!IsInRange(x, y)) return false;
+        return board[x, y] != 0;
+    }
+
+    public void ShowGhost(int x, int y)
+    {
+        HideGhost();
+
+        if (!IsInRange(x, y)) return;
+        if (HasStone(x, y)) return;
+
+        Vector3 pos = GridToWorld(x, y);
+        pos.z = -0.04f;
+
+        if (ghost != null)
+        {
+            ghost.transform.position = pos;
+            ghost.SetActive(true);
+        }
+    }
+
+    public void HideGhost()
+    {
+        if (ghost != null) ghost.SetActive(false);
+    }
+
+    public Vector3 GridToWorld(int x, int y)
+    {
+        return new Vector3(
+            MinX + x * cellSizeX,
+            MinY + y * cellSizeY,
+            0f
+        );
+    }
+
+    public bool WorldToGrid(Vector3 worldPos, out int gx, out int gy)
+    {
+        float fx = (worldPos.x - MinX) / cellSizeX;
+        float fy = (worldPos.y - MinY) / cellSizeY;
+
+        gx = Mathf.RoundToInt(fx);
+        gy = Mathf.RoundToInt(fy);
+
+        if (!IsInRange(gx, gy))
+            return false;
+
+        Vector3 snapped = GridToWorld(gx, gy);
+
+        float dx = Mathf.Abs(worldPos.x - snapped.x);
+        float dy = Mathf.Abs(worldPos.y - snapped.y);
+
+        if (dx > cellSizeX * 0.45f || dy > cellSizeY * 0.45f)
+            return false;
+
+        return true;
     }
 
     public void ClearStones()
     {
-        foreach (var s in spawnedStones) Destroy(s);
+        foreach (GameObject s in spawnedStones)
+            Destroy(s);
+
         spawnedStones.Clear();
+        board = new int[lineCount, lineCount];
+        HideGhost();
     }
 
-    /// <summary>월드 좌표 → 격자 인덱스 변환</summary>
-    public bool WorldToGrid(Vector3 worldPos, out int gx, out int gy)
+    private bool IsInRange(int x, int y)
     {
-        gx = Mathf.RoundToInt(worldPos.x / cellSize);
-        gy = Mathf.RoundToInt(worldPos.y / cellSize);
-        return gx >= 0 && gx < lineCount && gy >= 0 && gy < lineCount;
+        return x >= 0 && x < lineCount && y >= 0 && y < lineCount;
     }
 }

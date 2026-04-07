@@ -12,14 +12,38 @@ public class InputHandler : MonoBehaviour
 
     private void Update()
     {
-        if (!Input.GetMouseButtonDown(0)) return;
+        UpdateGhostPreview();
 
-        Vector3 worldPos = mainCam.ScreenToWorldPoint(Input.mousePosition);
-        worldPos.z = 0;
+        if (!Input.GetMouseButtonDown(0))
+            return;
+
+        Vector3 mouse = Input.mousePosition;
+        mouse.z = -mainCam.transform.position.z;
+
+        Vector3 worldPos = mainCam.ScreenToWorldPoint(mouse);
+        worldPos.z = 0f;
 
         if (boardRenderer.WorldToGrid(worldPos, out int gx, out int gy))
         {
             GameManager.Instance.OnCellClicked(gx, gy);
+        }
+    }
+
+    private void UpdateGhostPreview()
+    {
+        Vector3 mouse = Input.mousePosition;
+        mouse.z = -mainCam.transform.position.z;
+
+        Vector3 worldPos = mainCam.ScreenToWorldPoint(mouse);
+        worldPos.z = 0f;
+
+        if (boardRenderer.WorldToGrid(worldPos, out int gx, out int gy))
+        {
+            boardRenderer.ShowGhost(gx, gy);
+        }
+        else
+        {
+            boardRenderer.HideGhost();
         }
     }
 }
