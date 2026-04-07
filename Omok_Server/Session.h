@@ -1,5 +1,9 @@
 #pragma once
 
+/*
+흐름 -> 로그인(아이디 입력) -> 매치메이킹 큐에 넣음 -> 큐잡힘 -> 게임.
+*/
+
 enum class SESSION_STATE
 {
     FREE,
@@ -18,7 +22,7 @@ public:
     std::atomic<bool> connected = false;
     SESSION_STATE state = SESSION_STATE::FREE;
 
-    std::string nickname;
+    std::string id; // 
 
     static constexpr int PACKET_BUF_SIZE = 4096;
     char packetBuf[PACKET_BUF_SIZE]{};
