@@ -22,7 +22,7 @@ public:
     std::atomic<bool> connected = false;
     SESSION_STATE state = SESSION_STATE::FREE;
 
-    std::string id; // 
+    std::string id; // 영문 id
 
     static constexpr int PACKET_BUF_SIZE = 4096;
     char packetBuf[PACKET_BUF_SIZE]{};
@@ -38,9 +38,7 @@ public:
         socket = INVALID_SOCKET;
         connected = false;
         state = SESSION_STATE::FREE;
-        nickname.clear();
         savedSize = 0;
         ZeroMemory(packetBuf, sizeof(packetBuf));
-        //recvOver.SetupRecv();
     }
 };
