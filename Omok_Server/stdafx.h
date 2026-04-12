@@ -18,7 +18,7 @@ using namespace std;
 
 constexpr unsigned short BUFSIZE = 256;
 constexpr unsigned short MAX_USER = 1000;
-constexpr unsigned short PORT_NUM = 7777;
+constexpr unsigned short PORT_NUM = 6789;
 
 enum class TASK_TYPE
 {
