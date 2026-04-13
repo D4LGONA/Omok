@@ -1,10 +1,10 @@
 #include "stdafx.h"
+#include "Session.h"
 
 HANDLE g_iocp_handle;
 SOCKET g_server;
-SOCKET g_client;
 
-std::array<int, MAX_USER> Session;
+std::array<Session*, MAX_USER> Sessions{};
 
 void WorkerThread(HANDLE iocp_hd)
 {
@@ -19,7 +19,7 @@ void WorkerThread(HANDLE iocp_hd)
         {
             if (over == nullptr)
             {
-                std:cout << "GetQueuedCompletionStatus failed with error: " <<  GetLastError() << std::endl;
+                std::cout << "GetQueuedCompletionStatus failed with error: " <<  GetLastError() << std::endl;
                 continue;
             }
             continue;
@@ -30,28 +30,84 @@ void WorkerThread(HANDLE iocp_hd)
 
         if (ext_over->ov == TASK_TYPE::ACCEPT)
         {
-            cout << "ACCEPT: " << g_client << endl;
-            if (client_id != -1) {
-                Player& player = players[client_id];
-                player.setup(client_id, g_client);
-                CreateIoCompletionPort(reinterpret_cast<HANDLE>(g_client), iocp_hd, client_id, 0);
-                player.recv();
-                g_client = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+            SOCKET client_socket = ext_over->acceptSocket;
+
+            int client_id = GenerateClientId();
+            std::cout << "ACCEPT: socket=" << client_socket << " id=" << client_id << std::endl;
+            
+            if (client_id != -1)
+            {
+                Session* sess = new Session(); // ???? 
+                // OnConnect에는 실제 AcceptEx로 만들어진 소켓을 전달해야 함
+                sess->OnConnect(client_socket, client_id);
+                Sessions[client_id] = sess;
+
+                // AcceptEx로 수락된 소켓은 부모 소켓 컨텍스트를 업데이트해야 합니다.
+                setsockopt(client_socket, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT,
+                           reinterpret_cast<const char*>(&g_server), sizeof(g_server));
+
+                HANDLE hp = CreateIoCompletionPort(reinterpret_cast<HANDLE>(client_socket), iocp_hd, static_cast<ULONG_PTR>(client_id), 0);
+                if (hp == NULL)
+                {
+                    std::cerr << "CreateIoCompletionPort for client failed: " << GetLastError() << std::endl;
+                    closesocket(client_socket);
+                    delete sess;
+                }
+                else
+                {
+                    // Post initial recv
+                    sess->PostRecv();
+                }
             }
             else
-                cout << "Max user exceeded.\n";
+            {
+                std::cout << "Max user exceeded.\n";
+                closesocket(client_socket);
+            }
 
-            EXT_OVER ac_over; 
-            ac_over.ov = TASK_TYPE::ACCEPT;
-            AcceptEx(g_server, g_client, ac_over.wb_buf, 0, sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, 0, &ac_over.over);
+            // Post another AcceptEx to accept next connection
+            EXT_OVER* ac_over = new EXT_OVER();
+            ac_over->ov = TASK_TYPE::ACCEPT;
+            ac_over->acceptSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+            if (ac_over->acceptSocket == INVALID_SOCKET)
+            {
+                std::cerr << "WSASocket(for accept) failed: " << WSAGetLastError() << std::endl;
+                delete ac_over;
+            }
+            else
+            {
+                BOOL ok = AcceptEx(g_server, ac_over->acceptSocket, ac_over->wb_buf, 0,
+                                   sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16,
+                                   0, &ac_over->over);
+                if (!ok)
+                {
+                    int err = WSAGetLastError();
+                    if (err != WSA_IO_PENDING)
+                    {
+                        std::cerr << "AcceptEx failed: " << err << std::endl;
+                        closesocket(ac_over->acceptSocket);
+                        delete ac_over;
+                    }
+                    // WSA_IO_PENDING 이면 정상적으로 비동기 대기중이며 오버랩은 완료 시 처리됨
+                }
+            }
+
+            // ext_over는 힙 할당(이 파일의 AcceptEx 포스트 경로들에서)되어 있으므로 해제
+            delete ext_over;
         }
         else if (ext_over->ov == TASK_TYPE::RECV)
         {
-            Player& player = players[player_id];
-            player.update_packet(ext_over, num_bytes);
-            player.process_buffer(hstmt);
-
-            player.recv();
+            // num_bytes bytes were received into the session's recv buffer.
+            if (player_id >= 0 && player_id < static_cast<int>(MAX_USER) && Sessions[player_id])
+            {
+                Session* sess = Sessions[player_id];
+                // ext_over here should point to sess->recvOver (owned by session), do not delete
+                sess->OnRecvCompleted(ext_over, num_bytes);
+            }
+            else
+            {
+                std::cerr << "RECV completion for unknown session id=" << player_id << std::endl;
+            }
         }
         else if (ext_over->ov == TASK_TYPE::SEND)
         {
@@ -62,20 +118,40 @@ void WorkerThread(HANDLE iocp_hd)
 
 int main()
 {
-    // doing acceptEX
-    g_client = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
-    EXT_OVER ac_over;
-    ac_over.ov = TASK_TYPE::ACCEPT;
-    AcceptEx(g_server, g_client, ac_over.wb_buf, 0, sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, 0, &ac_over.over);
+    initialize_server();
 
-    // add threads
-    thread evt_thread{ check_evt, g_iocp_handle }; // PostQueuedCompletionStatus
-    vector <thread> worker_threads;
+    // Post first AcceptEx
+    EXT_OVER* ac_over = new EXT_OVER();
+    ac_over->ov = TASK_TYPE::ACCEPT;
+    ac_over->acceptSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+    if (ac_over->acceptSocket == INVALID_SOCKET)
+    {
+        std::cerr << "WSASocket(for accept) failed: " << WSAGetLastError() << std::endl;
+        delete ac_over;
+    }
+    else
+    {
+        BOOL ok = AcceptEx(g_server, ac_over->acceptSocket, ac_over->wb_buf, 0,
+                           sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16,
+                           0, &ac_over->over);
+        if (!ok)
+        {
+            int err = WSAGetLastError();
+            if (err != WSA_IO_PENDING)
+            {
+                std::cerr << "AcceptEx failed: " << err << std::endl;
+                closesocket(ac_over->acceptSocket);
+                delete ac_over;
+            }
+            // WSA_IO_PENDING이면 정상: 오버랩은 WorkerThread에서 해제/처리
+        }
+    }
+
+    vector<thread> worker_threads;
     for (int i = 0; i < int(thread::hardware_concurrency()); ++i)
         worker_threads.emplace_back(WorkerThread, g_iocp_handle);
     for (auto& th : worker_threads)
         th.join();
-    evt_thread.join();
     closesocket(g_server);
     WSACleanup();
 }
@@ -87,15 +163,15 @@ void initialize_server()
 
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-        server_error("WSAStartup failed");
+        std::cout << "WSAStartup failed" << std::endl;
 
     g_server = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
     if (g_server == INVALID_SOCKET)
-        server_error("WSASocket failed");
+        std::cout << "WSASocket failed" << std::endl;
 
     u_long mode = 1;
     if (ioctlsocket(g_server, FIONBIO, &mode) != NO_ERROR) {
-        server_error("ioctlsocket failed");
+        std::cout << "ioctlsocket failed" << std::endl;
     }
 
     SOCKADDR_IN serverAddr;
@@ -105,15 +181,15 @@ void initialize_server()
     serverAddr.sin_addr.s_addr = INADDR_ANY;
 
     if (bind(g_server, reinterpret_cast<sockaddr*>(&serverAddr), sizeof(serverAddr)) == SOCKET_ERROR)
-        server_error("bind failed");
+        std::cout << "bind failed" << std::endl;
 
     if (listen(g_server, SOMAXCONN) == SOCKET_ERROR)
-        server_error("listen failed");
+        std::cout << "listen failed" << std::endl;
 
     g_iocp_handle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
     if (g_iocp_handle == NULL)
-        server_error("CreateIoCompletionPort failed");
+        std::cout << "CreateIoCompletionPort failed" << std::endl;
 
     if (CreateIoCompletionPort(reinterpret_cast<HANDLE>(g_server), g_iocp_handle, 0, 0) == NULL)
-        server_error("CreateIoCompletionPort for server socket failed");
+        std::cout << "CreateIoCompletionPort for server socket failed" << std::endl;
 }

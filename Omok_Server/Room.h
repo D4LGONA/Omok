@@ -1,28 +1,29 @@
 #pragma once
 
+// Room for two players.
+// p1 -> white
+// p2 -> black
 
-// 유저 두명이 겨루는 방.
-
-struct Point // 좌표.
+struct Point // coordinate
 {
-	unsigned short x = 0;
-	unsigned short y = 0;
+    unsigned short x = 0;
+    unsigned short y = 0;
 };
 
 class Room
 {
 private:
-	Point p1Point; // p1좌표
-	Point p2Point; // p2좌표
+    Point p1Point; // p1 
+    Point p2Point; // p2 
 
-	unsigned short p1Id;
-	unsigned short p2Id;
+    int p1Id;
+    int p2Id;
 
 public:
-	Room()
-	{
-		
-	}
+    Room()
+    {
+        
+    }
+
 
 };
-
