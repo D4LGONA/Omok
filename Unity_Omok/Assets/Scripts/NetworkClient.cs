@@ -1,7 +1,7 @@
-using System;
+ï»¿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using UnityEngine;
 
@@ -16,9 +16,16 @@ public class NetworkClient : MonoBehaviour
     private TcpClient client;
     private NetworkStream stream;
     private Thread recvThread;
-    private bool running = false;
+    private Thread sendThread;
+    private volatile bool running = false;
+    private bool cleanedUp = false;
 
-    private readonly ConcurrentQueue<string> recvQueue = new ConcurrentQueue<string>();
+    private readonly ConcurrentQueue<byte[]> recvQueue = new ConcurrentQueue<byte[]>();
+    private readonly ConcurrentQueue<byte[]> sendQueue = new ConcurrentQueue<byte[]>();
+    private readonly AutoResetEvent sendEvent = new AutoResetEvent(false);
+
+    private readonly List<byte> recvBuffer = new List<byte>(4096);
+    private readonly object recvBufferLock = new object();
 
     private void Awake()
     {
@@ -33,11 +40,6 @@ public class NetworkClient : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        Connect();
-    }
-
     public void Connect()
     {
         if (client != null && client.Connected)
@@ -50,27 +52,30 @@ public class NetworkClient : MonoBehaviour
             stream = client.GetStream();
 
             running = true;
-            recvThread = new Thread(ReceiveLoop);
-            recvThread.IsBackground = true;
+
+            recvThread = new Thread(ReceiveLoop) { IsBackground = true };
             recvThread.Start();
 
-            Debug.Log("¼­¹ö ¿¬°á ¼º°ø");
+            sendThread = new Thread(SendLoop) { IsBackground = true };
+            sendThread.Start();
+
+            Debug.Log("ì„œë²„ ì—°ê²° ì„±ê³µ");
         }
         catch (Exception e)
         {
-            Debug.LogError("¼­¹ö ¿¬°á ½ÇÆÐ: " + e.Message);
+            Debug.LogError("ì„œë²„ ì—°ê²° ì‹¤íŒ¨: " + e.Message);
         }
     }
 
     private void ReceiveLoop()
     {
-        byte[] buffer = new byte[1024];
+        byte[] tempBuffer = new byte[1024];
 
         while (running)
         {
             try
             {
-                int len = stream.Read(buffer, 0, buffer.Length);
+                int len = stream.Read(tempBuffer, 0, tempBuffer.Length);
 
                 if (len <= 0)
                 {
@@ -78,67 +83,128 @@ public class NetworkClient : MonoBehaviour
                     break;
                 }
 
-                string msg = Encoding.UTF8.GetString(buffer, 0, len);
-                recvQueue.Enqueue(msg);
+                lock (recvBufferLock)
+                {
+                    for (int i = 0; i < len; i++)
+                        recvBuffer.Add(tempBuffer[i]);
+
+                    ParseReceivedPackets();
+                }
             }
             catch (Exception e)
             {
-                Debug.LogError("¼ö½Å ¿À·ù: " + e.Message);
+                Debug.LogError("ìˆ˜ì‹  ì˜¤ë¥˜: " + e.Message);
                 running = false;
                 break;
             }
         }
     }
 
-    private void Update()
+    private void ParseReceivedPackets()
     {
-        while (recvQueue.TryDequeue(out string msg))
+        while (true)
         {
-            PacketHandler.Handle(msg);
+            if (recvBuffer.Count < 2)
+                return;
+
+            ushort packetSize = BitConverter.ToUInt16(recvBuffer.ToArray(), 0);
+
+            if (packetSize < 3)
+            {
+                recvBuffer.Clear();
+                return;
+            }
+
+            if (recvBuffer.Count < packetSize)
+                return;
+
+            byte[] packet = recvBuffer.GetRange(0, packetSize).ToArray();
+            recvBuffer.RemoveRange(0, packetSize);
+            recvQueue.Enqueue(packet);
         }
     }
 
-    public void Send(string msg)
+    private void SendLoop()
     {
-        if (client == null || !client.Connected || stream == null)
+        while (running)
         {
-            Debug.LogWarning("¼­¹ö¿¡ ¿¬°áµÇ¾î ÀÖÁö ¾ÊÀ½");
+            while (sendQueue.TryDequeue(out var data))
+            {
+                try
+                {
+                    if (stream != null && stream.CanWrite)
+                    {
+                        stream.Write(data, 0, data.Length);
+                    }
+                    else
+                    {
+                        running = false;
+                        break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("ì „ì†¡ ì˜¤ë¥˜: " + e.Message);
+                    running = false;
+                    break;
+                }
+            }
+
+            sendEvent.WaitOne(100);
+        }
+    }
+
+    private void Update()
+    {
+        while (recvQueue.TryDequeue(out byte[] packet))
+        {
+            PacketHandler.Handle(packet);
+        }
+    }
+
+    public void SendRaw(byte[] packet)
+    {
+        if (packet == null || packet.Length == 0)
+            return;
+
+        if (client == null || stream == null)
+        {
+            Debug.LogWarning("ì„œë²„ì— ì—°ê²°ë˜ì–´ ìžˆì§€ ì•ŠìŒ");
             return;
         }
 
+        sendQueue.Enqueue(packet);
+        sendEvent.Set();
+    }
+
+    private void CleanupNetworking()
+    {
+        if (cleanedUp) return;
+        cleanedUp = true;
+
+        running = false;
+
+        try { sendEvent.Set(); } catch { }
+
         try
         {
-            byte[] data = Encoding.UTF8.GetBytes(msg);
-            stream.Write(data, 0, data.Length);
-            Debug.Log("Send: " + msg);
+            stream?.Close();
+            client?.Close();
         }
-        catch (Exception e)
-        {
-            Debug.LogError("Àü¼Û ¿À·ù: " + e.Message);
-        }
+        catch { }
+
+        try { recvThread?.Join(500); } catch { }
+        try { sendThread?.Join(500); } catch { }
     }
 
     private void OnDestroy()
     {
-        running = false;
-
-        try
-        {
-            stream?.Close();
-            client?.Close();
-        }
-        catch { }
+        CleanupNetworking();
+        sendEvent.Dispose();
     }
 
     private void OnApplicationQuit()
     {
-        running = false;
-
-        try
-        {
-            stream?.Close();
-            client?.Close();
-        }
-        catch { }
+        CleanupNetworking();
     }
 }

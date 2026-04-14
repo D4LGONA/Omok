@@ -1,5 +1,4 @@
 #pragma once
-#pragma pack(push, 1)
 
 enum PACKET_ID : char
 {
@@ -16,6 +15,8 @@ enum PACKET_ID : char
 	SC_PLAYTURN,
 	SC_GAMERESULT
 };
+
+#pragma pack(push, 1)
 
 struct CS_LOGIN_PACKET
 {
@@ -83,8 +84,8 @@ struct SC_PLAYTURN_PACKET
 struct SC_GAMERESULT_PACKET
 {
 	unsigned short size;
-	PACKET_ID packetID;
+	PACKET_ID packetId;
 	bool bWin = false;
 };
 
-#pragma pack(pop, 1)
+#pragma pack(pop)

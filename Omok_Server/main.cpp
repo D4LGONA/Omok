@@ -1,62 +1,156 @@
 #include "stdafx.h"
 #include "Session.h"
 
+constexpr int ACCEPT_DEPTH = 16;
+
 HANDLE g_iocp_handle;
 SOCKET g_server;
 
-std::array<Session*, MAX_USER> Sessions{};
+std::array<Session, MAX_USER> Sessions{};
+std::array<EXT_OVER, ACCEPT_DEPTH> g_acceptContexts{};
+
+void initialize_server();
+bool PostAccept(EXT_OVER& ac_over);
+void WorkerThread(HANDLE iocp_hd);
+
+bool PostAccept(EXT_OVER& ac_over)
+{
+    ZeroMemory(&ac_over.over, sizeof(ac_over.over));
+    ZeroMemory(ac_over.wb_buf, sizeof(ac_over.wb_buf));
+    ac_over.ov = TASK_TYPE::ACCEPT;
+
+    if (ac_over.acceptSocket != INVALID_SOCKET)
+    {
+        closesocket(ac_over.acceptSocket);
+        ac_over.acceptSocket = INVALID_SOCKET;
+    }
+
+    ac_over.acceptSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+    if (ac_over.acceptSocket == INVALID_SOCKET)
+    {
+        std::cerr << "WSASocket(for accept) failed: " << WSAGetLastError() << std::endl;
+        return false;
+    }
+
+    DWORD recv_bytes = 0;
+    BOOL ok = AcceptEx(
+        g_server,
+        ac_over.acceptSocket,
+        ac_over.wb_buf,
+        0,
+        sizeof(SOCKADDR_IN) + 16,
+        sizeof(SOCKADDR_IN) + 16,
+        &recv_bytes,
+        &ac_over.over
+    );
+
+    if (!ok)
+    {
+        int err = WSAGetLastError();
+        if (err != WSA_IO_PENDING)
+        {
+            std::cerr << "AcceptEx failed: " << err << std::endl;
+            closesocket(ac_over.acceptSocket);
+            ac_over.acceptSocket = INVALID_SOCKET;
+            return false;
+        }
+    }
+
+    return true;
+}
 
 void WorkerThread(HANDLE iocp_hd)
 {
     while (true)
     {
-        DWORD num_bytes;
-        ULONG_PTR key;
-        WSAOVERLAPPED* over;
-        BOOL ret;
-        ret = GetQueuedCompletionStatus(iocp_hd, &num_bytes, &key, &over, INFINITE);
+        DWORD num_bytes = 0;
+        ULONG_PTR key = 0;
+        WSAOVERLAPPED* over = nullptr;
+
+        BOOL ret = GetQueuedCompletionStatus(iocp_hd, &num_bytes, &key, &over, INFINITE);
+
         if (ret == FALSE)
         {
             if (over == nullptr)
             {
-                std::cout << "GetQueuedCompletionStatus failed with error: " <<  GetLastError() << std::endl;
+                std::cout << "GetQueuedCompletionStatus failed with error: "
+                    << GetLastError() << std::endl;
                 continue;
             }
+
+            EXT_OVER* ext_over = reinterpret_cast<EXT_OVER*>(over);
+
+            if (ext_over->ov == TASK_TYPE::ACCEPT)
+            {
+                std::cerr << "ACCEPT completion failed: " << GetLastError() << std::endl;
+                PostAccept(*ext_over);
+                continue;
+            }
+            else if (ext_over->ov == TASK_TYPE::RECV)
+            {
+                int player_id = static_cast<int>(key);
+                if (player_id >= 0 && player_id < static_cast<int>(MAX_USER))
+                {
+                    Sessions[player_id].Disconnect();
+                }
+                continue;
+            }
+            else if (ext_over->ov == TASK_TYPE::SEND)
+            {
+                delete ext_over;
+                continue;
+            }
+
             continue;
         }
 
-        int player_id = static_cast<int>(key); 
         EXT_OVER* ext_over = reinterpret_cast<EXT_OVER*>(over);
 
         if (ext_over->ov == TASK_TYPE::ACCEPT)
         {
             SOCKET client_socket = ext_over->acceptSocket;
+            ext_over->acceptSocket = INVALID_SOCKET; // 세션으로 소유권 넘김
 
             int client_id = GenerateClientId();
             std::cout << "ACCEPT: socket=" << client_socket << " id=" << client_id << std::endl;
-            
+
             if (client_id != -1)
             {
-                Session* sess = new Session(); // ???? 
-                // OnConnect에는 실제 AcceptEx로 만들어진 소켓을 전달해야 함
-                sess->OnConnect(client_socket, client_id);
-                Sessions[client_id] = sess;
+                Session& sess = Sessions[client_id];
+                sess.Reset();
+                sess.OnConnect(client_socket, client_id);
 
-                // AcceptEx로 수락된 소켓은 부모 소켓 컨텍스트를 업데이트해야 합니다.
-                setsockopt(client_socket, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT,
-                           reinterpret_cast<const char*>(&g_server), sizeof(g_server));
-
-                HANDLE hp = CreateIoCompletionPort(reinterpret_cast<HANDLE>(client_socket), iocp_hd, static_cast<ULONG_PTR>(client_id), 0);
-                if (hp == NULL)
+                if (setsockopt(client_socket,
+                    SOL_SOCKET,
+                    SO_UPDATE_ACCEPT_CONTEXT,
+                    reinterpret_cast<const char*>(&g_server),
+                    sizeof(g_server)) == SOCKET_ERROR)
                 {
-                    std::cerr << "CreateIoCompletionPort for client failed: " << GetLastError() << std::endl;
+                    std::cerr << "SO_UPDATE_ACCEPT_CONTEXT failed: "
+                        << WSAGetLastError() << std::endl;
                     closesocket(client_socket);
-                    delete sess;
+                    sess.Disconnect();
                 }
                 else
                 {
-                    // Post initial recv
-                    sess->PostRecv();
+                    HANDLE hp = CreateIoCompletionPort(
+                        reinterpret_cast<HANDLE>(client_socket),
+                        iocp_hd,
+                        static_cast<ULONG_PTR>(client_id),
+                        0
+                    );
+
+                    if (hp == NULL)
+                    {
+                        std::cerr << "CreateIoCompletionPort for client failed: "
+                            << GetLastError() << std::endl;
+                        closesocket(client_socket);
+                        sess.Disconnect();
+                    }
+                    else
+                    {
+                        sess.PostRecv();
+                    }
                 }
             }
             else
@@ -65,44 +159,23 @@ void WorkerThread(HANDLE iocp_hd)
                 closesocket(client_socket);
             }
 
-            // Post another AcceptEx to accept next connection
-            EXT_OVER* ac_over = new EXT_OVER();
-            ac_over->ov = TASK_TYPE::ACCEPT;
-            ac_over->acceptSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
-            if (ac_over->acceptSocket == INVALID_SOCKET)
-            {
-                std::cerr << "WSASocket(for accept) failed: " << WSAGetLastError() << std::endl;
-                delete ac_over;
-            }
-            else
-            {
-                BOOL ok = AcceptEx(g_server, ac_over->acceptSocket, ac_over->wb_buf, 0,
-                                   sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16,
-                                   0, &ac_over->over);
-                if (!ok)
-                {
-                    int err = WSAGetLastError();
-                    if (err != WSA_IO_PENDING)
-                    {
-                        std::cerr << "AcceptEx failed: " << err << std::endl;
-                        closesocket(ac_over->acceptSocket);
-                        delete ac_over;
-                    }
-                    // WSA_IO_PENDING 이면 정상적으로 비동기 대기중이며 오버랩은 완료 시 처리됨
-                }
-            }
-
-            // ext_over는 힙 할당(이 파일의 AcceptEx 포스트 경로들에서)되어 있으므로 해제
-            delete ext_over;
+            PostAccept(*ext_over);
         }
         else if (ext_over->ov == TASK_TYPE::RECV)
         {
-            // num_bytes bytes were received into the session's recv buffer.
-            if (player_id >= 0 && player_id < static_cast<int>(MAX_USER) && Sessions[player_id])
+            int player_id = static_cast<int>(key);
+
+            if (player_id >= 0 && player_id < static_cast<int>(MAX_USER))
             {
-                Session* sess = Sessions[player_id];
-                // ext_over here should point to sess->recvOver (owned by session), do not delete
-                sess->OnRecvCompleted(ext_over, num_bytes);
+                Session& sess = Sessions[player_id];
+
+                if (num_bytes == 0)
+                {
+                    sess.Disconnect();
+                    continue;
+                }
+
+                sess.OnRecvCompleted(ext_over, num_bytes);
             }
             else
             {
@@ -120,42 +193,22 @@ int main()
 {
     initialize_server();
 
-    // Post first AcceptEx
-    EXT_OVER* ac_over = new EXT_OVER();
-    ac_over->ov = TASK_TYPE::ACCEPT;
-    ac_over->acceptSocket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
-    if (ac_over->acceptSocket == INVALID_SOCKET)
+    for (auto& ac_over : g_acceptContexts)
     {
-        std::cerr << "WSASocket(for accept) failed: " << WSAGetLastError() << std::endl;
-        delete ac_over;
-    }
-    else
-    {
-        BOOL ok = AcceptEx(g_server, ac_over->acceptSocket, ac_over->wb_buf, 0,
-                           sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16,
-                           0, &ac_over->over);
-        if (!ok)
-        {
-            int err = WSAGetLastError();
-            if (err != WSA_IO_PENDING)
-            {
-                std::cerr << "AcceptEx failed: " << err << std::endl;
-                closesocket(ac_over->acceptSocket);
-                delete ac_over;
-            }
-            // WSA_IO_PENDING이면 정상: 오버랩은 WorkerThread에서 해제/처리
-        }
+        PostAccept(ac_over);
     }
 
-    vector<thread> worker_threads;
-    for (int i = 0; i < int(thread::hardware_concurrency()); ++i)
+    std::vector<std::thread> worker_threads;
+    for (int i = 0; i < static_cast<int>(std::thread::hardware_concurrency()); ++i)
         worker_threads.emplace_back(WorkerThread, g_iocp_handle);
+
     for (auto& th : worker_threads)
         th.join();
+
     closesocket(g_server);
     WSACleanup();
+    return 0;
 }
-
 
 void initialize_server()
 {
@@ -170,9 +223,8 @@ void initialize_server()
         std::cout << "WSASocket failed" << std::endl;
 
     u_long mode = 1;
-    if (ioctlsocket(g_server, FIONBIO, &mode) != NO_ERROR) {
+    if (ioctlsocket(g_server, FIONBIO, &mode) != NO_ERROR)
         std::cout << "ioctlsocket failed" << std::endl;
-    }
 
     SOCKADDR_IN serverAddr;
     memset(&serverAddr, 0, sizeof(serverAddr));

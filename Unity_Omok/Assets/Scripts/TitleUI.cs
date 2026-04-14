@@ -36,10 +36,6 @@ public class TitleUI : MonoBehaviour
         QueueState.gameObject.SetActive(true);
     }
 
-    private void Update()
-    {
-    }
-
     public void ConfirmId()
     {
         string input = idInputField.text.Trim();
@@ -51,7 +47,10 @@ public class TitleUI : MonoBehaviour
         }
 
         // 아이디 로그인 완료
-        // todo: 원래 여기서 서버랑 연동해야 함
+        NetworkClient.Instance.Connect();
+        NetworkClient.Instance.SendRaw(ClientPacketBuilder.MakeLogin(input, ""));
+
+        // todo: 여기 아니고 ok 패킷 왔을때 넘어가야 함. 일단은 이렇게 두기
         playerId = input;
 
         ResetQueueState();
@@ -59,17 +58,20 @@ public class TitleUI : MonoBehaviour
 
     public void OnClickStartGame() // 게임시작 버튼을 누름
     {
-        //GameSession.Instance.SetPlayerId(playerId);
-        //NetworkClient.Instance.Connect();
         inQueue = !inQueue;
 
         if (true == inQueue)
         {
+            // 큐 들어간다는 패킷 전송
+            NetworkClient.Instance.SendRaw(ClientPacketBuilder.MakeQueue(true));
+
             StartText.SetText("Cancel");
             MatchingText.gameObject.SetActive(true);
         }
         else
         {
+            NetworkClient.Instance.SendRaw(ClientPacketBuilder.MakeQueue(false));
+
             StartText.SetText("Start");
             MatchingText.gameObject.SetActive(false);
         }
@@ -79,5 +81,4 @@ public class TitleUI : MonoBehaviour
     {
         SceneManager.LoadScene("GameScene");
     }
-
 }

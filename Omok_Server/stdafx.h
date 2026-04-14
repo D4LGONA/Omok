@@ -32,7 +32,7 @@ inline int GenerateClientId()
     return prev;
 }
 
-extern std::array<class Session*, MAX_USER> Sessions;
+extern std::array<class Session, MAX_USER> Sessions;
 
 enum class TASK_TYPE
 {

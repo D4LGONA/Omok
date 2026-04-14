@@ -1,11 +1,21 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "Session.h"
+
+void Session::SendLoginResult(bool success)
+{
+    SC_LOGIN_RESULT_PACKET pkt{};
+    pkt.size = sizeof(SC_LOGIN_RESULT_PACKET);
+    pkt.packetId = SC_LOGIN_RESULT;
+    pkt.bSuccess = success;
+
+    PostSend(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+}
 
 bool Session::PostRecv()
 {
-    if (socket == INVALID_SOCKET) return false;
+    if (socket == INVALID_SOCKET)
+        return false;
 
-    // Ensure wsabuf points to internal buffer
     recvOver.wsabuf.len = BUFSIZE;
     recvOver.wsabuf.buf = recvOver.wb_buf;
     ZeroMemory(&recvOver.over, sizeof(recvOver.over));
@@ -13,6 +23,7 @@ bool Session::PostRecv()
 
     DWORD flags = 0;
     DWORD bytesRecv = 0;
+
     int ret = WSARecv(socket, &recvOver.wsabuf, 1, &bytesRecv, &flags, &recvOver.over, nullptr);
     if (ret == SOCKET_ERROR)
     {
@@ -23,6 +34,7 @@ bool Session::PostRecv()
             return false;
         }
     }
+
     return true;
 }
 
@@ -30,78 +42,71 @@ void Session::OnRecvCompleted(EXT_OVER* over, DWORD bytesTransferred)
 {
     if (bytesTransferred == 0)
     {
-        // connection closed by peer
-        OnDisconnect();
+        Disconnect();
         return;
     }
 
-    // copy received data into packetBuf
-    if (bytesTransferred + savedSize <= PACKET_BUF_SIZE)
+    if (bytesTransferred + savedSize > PACKET_BUF_SIZE)
     {
-        memcpy(packetBuf + savedSize, over->wb_buf, bytesTransferred);
-        savedSize += static_cast<int>(bytesTransferred);
-    }
-    else
-    {
-        // overflow, reset
+        std::cerr << "Recv buffer overflow. session id=" << id << std::endl;
         savedSize = 0;
         ZeroMemory(packetBuf, sizeof(packetBuf));
-        // still post next receive to continue
-        PostRecv();
+
+        if (!PostRecv())
+            Disconnect();
         return;
     }
 
-    // 항상 다음 recv를 게시하여 수신 중단을 방지
-    PostRecv();
+    memcpy(packetBuf + savedSize, over->wb_buf, bytesTransferred);
+    savedSize += static_cast<int>(bytesTransferred);
 
-    // Protocol.h에 따라 패킷 헤더는: unsigned short size; PACKET_ID packetId; ...
-    // 따라서 먼저 size(2바이트)를 읽고 완전한 패킷이 도착했을 때 큐에 넣는다.
+    if (!PostRecv())
+    {
+        Disconnect();
+        return;
+    }
+
     while (savedSize >= static_cast<int>(sizeof(unsigned short) + sizeof(PACKET_ID)))
     {
         unsigned short pktSize = 0;
         memcpy(&pktSize, packetBuf, sizeof(pktSize));
-        if (pktSize == 0 || pktSize > PACKET_BUF_SIZE)
+
+        if (pktSize < sizeof(unsigned short) + sizeof(PACKET_ID) || pktSize > PACKET_BUF_SIZE)
         {
-            // 이상한 크기이면 버퍼 초기화
+            std::cerr << "Invalid packet size: " << pktSize
+                << " session id=" << id << std::endl;
             savedSize = 0;
             ZeroMemory(packetBuf, sizeof(packetBuf));
+            Disconnect();
             return;
         }
 
         if (savedSize < static_cast<int>(pktSize))
-        {
-            // 아직 전체 패킷이 도착하지 않음
             break;
-        }
 
-        // 완전한 패킷을 메모리 큐에 보관
-        {
-            std::vector<char> pkt(packetBuf, packetBuf + pktSize);
-            std::lock_guard<std::mutex> lk(recvQueueMutex);
-            recvQueue.emplace(std::move(pkt));
-        }
+        ProcessPacket(packetBuf, pktSize);
 
-        // 버퍼에서 해당 패킷 제거
         int remain = savedSize - static_cast<int>(pktSize);
         if (remain > 0)
             memmove(packetBuf, packetBuf + pktSize, remain);
+
         savedSize = remain;
     }
-
-    // (처리 소비자는 TryPopPacket를 통해 큐에서 패킷을 꺼내 처리)
 }
 
 bool Session::PostSend(const char* buf, int len)
 {
-    if (socket == INVALID_SOCKET) return false;
+    if (socket == INVALID_SOCKET)
+        return false;
+
+    if (buf == nullptr || len <= 0 || len > BUFSIZE)
+    {
+        std::cerr << "PostSend invalid args. len=" << len << std::endl;
+        return false;
+    }
 
     EXT_OVER* sendOver = new EXT_OVER();
-    // prepare send buffer and overlapped
-    sendOver->wsabuf.len = len;
-    sendOver->wsabuf.buf = sendOver->wb_buf;
-    ZeroMemory(&sendOver->over, sizeof(sendOver->over));
-    sendOver->ov = TASK_TYPE::SEND;
-    memcpy(sendOver->wb_buf, buf, len);
+    sendOver->setup_send(buf, len);
 
     DWORD bytesSent = 0;
     int ret = WSASend(socket, &sendOver->wsabuf, 1, &bytesSent, 0, &sendOver->over, nullptr);
@@ -115,14 +120,43 @@ bool Session::PostSend(const char* buf, int len)
             return false;
         }
     }
+
     return true;
 }
 
-bool Session::TryPopPacket(std::vector<char>& out)
+// 받은 패킷 처리하는 함수.
+void Session::ProcessPacket(char* packet, int size)
 {
-    std::lock_guard<std::mutex> lk(recvQueueMutex);
-    if (recvQueue.empty()) return false;
-    out = std::move(recvQueue.front());
-    recvQueue.pop();
-    return true;
+    PACKET_ID packetId = static_cast<PACKET_ID>(packet[sizeof(unsigned short)]);
+
+    switch (packetId)
+    {
+    case CS_LOGIN:
+    {
+        CS_LOGIN_PACKET* pkt = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
+        id = std::string(pkt->id, strnlen(pkt->id, sizeof(pkt->id)));
+        std::cout << "[CS_LOGIN] session id=" << id << std::endl;
+
+        SendLoginResult(true);
+        break;
+    }
+    case CS_QUEUE:
+    {
+        CS_QUEUE_PACKET* pkt = reinterpret_cast<CS_QUEUE_PACKET*>(packet);
+        std::cout << "[CS_QUEUE] session id=" << id << std::endl;
+        break;
+    }
+    case CS_MATCHING_RESPONSE:
+        std::cout << "[CS_MATCHING_RESPONSE] session id=" << id << std::endl;
+        break;
+
+    case CS_PLAYTURN:
+        std::cout << "[CS_PLAYTURN] session id=" << id << std::endl;
+        break;
+
+    default:
+        std::cerr << "Unknown packet id: " << static_cast<int>(packetId)
+            << " session id=" << id << std::endl;
+        break;
+    }
 }
