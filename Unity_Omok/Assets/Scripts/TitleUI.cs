@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class TitleUI : MonoBehaviour
@@ -19,66 +18,111 @@ public class TitleUI : MonoBehaviour
     {
         ResetLoginState();
 
-        idInputField.interactable = true;
-        idInputField.ActivateInputField();
+        if (idInputField != null)
+        {
+            idInputField.interactable = true;
+            idInputField.ActivateInputField();
+        }
     }
 
-    private void ResetLoginState()
+    public void ResetLoginState()
     {
-        LoginState.gameObject.SetActive(true);
-        QueueState.gameObject.SetActive(false);
+        if (LoginState != null) LoginState.SetActive(true);
+        if (QueueState != null) QueueState.SetActive(false);
     }
-    private void ResetQueueState()
+
+    public void ResetQueueState()
     {
-        StartText.SetText("Start");
-        MatchingText.gameObject.SetActive(false);
-        LoginState.gameObject.SetActive(false);
-        QueueState.gameObject.SetActive(true);
+        if (StartText != null) StartText.SetText("Start");
+        if (MatchingText != null) MatchingText.gameObject.SetActive(false);
+        if (LoginState != null) LoginState.SetActive(false);
+        if (QueueState != null) QueueState.SetActive(true);
+
+        inQueue = false;
     }
 
     public void ConfirmId()
     {
-        string input = idInputField.text.Trim();
-        if (string.IsNullOrEmpty(input)) // 아이디 안적음
+        string input = idInputField != null ? idInputField.text.Trim() : "";
+
+        if (string.IsNullOrEmpty(input))
         {
             Debug.Log("empty id");
             ResetLoginState();
             return;
         }
 
-        // 아이디 로그인 완료
-        NetworkClient.Instance.Connect();
-        NetworkClient.Instance.SendRaw(ClientPacketBuilder.MakeLogin(input, ""));
-
-        // todo: 여기 아니고 ok 패킷 왔을때 넘어가야 함. 일단은 이렇게 두기
         playerId = input;
 
-        ResetQueueState();
+        if (TitleSceneManager.Instance != null)
+        {
+            TitleSceneManager.Instance.RequestLogin(input);
+        }
     }
 
-    public void OnClickStartGame() // 게임시작 버튼을 누름
+    public void OnClickStartGame()
     {
-        inQueue = !inQueue;
+        if (TitleSceneManager.Instance == null)
+            return;
 
-        if (true == inQueue)
+        if (!inQueue)
         {
-            // 큐 들어간다는 패킷 전송
-            NetworkClient.Instance.SendRaw(ClientPacketBuilder.MakeQueue(true));
-
-            StartText.SetText("Cancel");
-            MatchingText.gameObject.SetActive(true);
+            TitleSceneManager.Instance.RequestQueueEnter();
         }
         else
         {
-            NetworkClient.Instance.SendRaw(ClientPacketBuilder.MakeQueue(false));
-
-            StartText.SetText("Start");
-            MatchingText.gameObject.SetActive(false);
+            TitleSceneManager.Instance.RequestQueueCancel();
         }
     }
 
-    public void OnMatched(string myColor)
+    public void SetLoginSuccess()
+    {
+        Debug.Log("로그인 성공");
+        ResetQueueState();
+    }
+
+    public void SetLoginFail()
+    {
+        Debug.Log("로그인 실패");
+        ResetLoginState();
+
+        if (idInputField != null)
+        {
+            idInputField.interactable = true;
+            idInputField.ActivateInputField();
+        }
+    }
+
+    public void SetQueueState(bool queueing)
+    {
+        inQueue = queueing;
+
+        if (StartText != null)
+            StartText.SetText(queueing ? "Cancel" : "Start");
+
+        if (MatchingText != null)
+            MatchingText.gameObject.SetActive(queueing);
+    }
+
+    public void ShowMatchFound()
+    {
+        Debug.Log("매칭 성공");
+        SetQueueState(false);
+    }
+
+    public void ShowMatchCanceled()
+    {
+        Debug.Log("매칭 취소");
+        SetQueueState(false);
+    }
+
+    public void OnMatched()
     {
         SceneManager.LoadScene("GameScene");
+    }
+
+    public string GetPlayerId()
+    {
+        return playerId;
     }
 }

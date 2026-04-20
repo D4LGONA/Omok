@@ -11,11 +11,12 @@
 // Session lifecycle states
 enum class SESSION_STATE
 {
-    FREE,
+    FREE = 0,
     CONNECTED,
-    LOGGED_IN,
-    MATCHING,
-    IN_GAME
+    LOGIN_OK,
+    IN_QUEUE,
+    MATCH_FOUND,
+    IN_ROOM
 };
 
 class Session

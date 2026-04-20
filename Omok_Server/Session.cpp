@@ -6,7 +6,7 @@ void Session::SendLoginResult(bool success)
     SC_LOGIN_RESULT_PACKET pkt{};
     pkt.size = sizeof(SC_LOGIN_RESULT_PACKET);
     pkt.packetId = SC_LOGIN_RESULT;
-    pkt.bSuccess = success;
+	pkt.loginResult = success ? LOGIN_SUCCESS : LOGIN_FAIL;
 
     PostSend(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
 }
@@ -143,7 +143,8 @@ void Session::ProcessPacket(char* packet, int size)
     case CS_QUEUE:
     {
         CS_QUEUE_PACKET* pkt = reinterpret_cast<CS_QUEUE_PACKET*>(packet);
-        std::cout << "[CS_QUEUE] session id=" << id << std::endl;
+        
+        std::cout << "[CS_QUEUE] session id=" << id << ", " << ToString(pkt->queueState) << std::endl;
         break;
     }
     case CS_MATCHING_RESPONSE:

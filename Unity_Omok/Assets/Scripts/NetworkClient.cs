@@ -52,6 +52,7 @@ public class NetworkClient : MonoBehaviour
             stream = client.GetStream();
 
             running = true;
+            cleanedUp = false;
 
             recvThread = new Thread(ReceiveLoop) { IsBackground = true };
             recvThread.Start();
@@ -79,6 +80,7 @@ public class NetworkClient : MonoBehaviour
 
                 if (len <= 0)
                 {
+                    Debug.LogWarning("서버와 연결이 종료되었습니다.");
                     running = false;
                     break;
                 }
@@ -111,6 +113,7 @@ public class NetworkClient : MonoBehaviour
 
             if (packetSize < 3)
             {
+                Debug.LogWarning("비정상 패킷 크기 수신, 버퍼 초기화");
                 recvBuffer.Clear();
                 return;
             }
@@ -138,6 +141,7 @@ public class NetworkClient : MonoBehaviour
                     }
                     else
                     {
+                        Debug.LogWarning("스트림에 쓸 수 없음");
                         running = false;
                         break;
                     }
@@ -165,9 +169,12 @@ public class NetworkClient : MonoBehaviour
     public void SendRaw(byte[] packet)
     {
         if (packet == null || packet.Length == 0)
+        {
+            Debug.LogWarning("보낼 패킷이 비어 있음");
             return;
+        }
 
-        if (client == null || stream == null)
+        if (client == null || stream == null || !running)
         {
             Debug.LogWarning("서버에 연결되어 있지 않음");
             return;
@@ -177,11 +184,37 @@ public class NetworkClient : MonoBehaviour
         sendEvent.Set();
     }
 
+    public void SendLogin(string id)
+    {
+        SendRaw(ClientPacketBuilder.MakeLogin(id));
+    }
+
+    public void SendQueueEnter()
+    {
+        SendRaw(ClientPacketBuilder.MakeQueue(Protocol.QUEUE_STATE.QUEUE_ENTER));
+    }
+
+    public void SendQueueCancel()
+    {
+        SendRaw(ClientPacketBuilder.MakeQueue(Protocol.QUEUE_STATE.QUEUE_CANCEL));
+    }
+
+    public void SendMatchingResponse()
+    {
+        SendRaw(ClientPacketBuilder.MakeMatchingResponse());
+    }
+
+    public void SendPlayTurn(ushort x, ushort y)
+    {
+        SendRaw(ClientPacketBuilder.MakePlayTurn(x, y));
+    }
+
     private void CleanupNetworking()
     {
-        if (cleanedUp) return;
-        cleanedUp = true;
+        if (cleanedUp)
+            return;
 
+        cleanedUp = true;
         running = false;
 
         try { sendEvent.Set(); } catch { }

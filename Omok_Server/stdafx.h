@@ -71,3 +71,47 @@ public:
 };
 
 #include "protocol.h"
+
+inline const char* ToString(LOGIN_RESULT result)
+{
+    switch (result)
+    {
+    case LOGIN_SUCCESS: return "LOGIN_SUCCESS";
+    case LOGIN_FAIL:    return "LOGIN_FAIL";
+    default:            return "UNKNOWN_LOGIN_RESULT";
+    }
+}
+
+inline const char* ToString(QUEUE_STATE state)
+{
+    switch (state)
+    {
+    case QUEUE_ENTER:  return "QUEUE_ENTER";
+    case QUEUE_CANCEL: return "QUEUE_CANCEL";
+    default:           return "UNKNOWN_QUEUE_STATE";
+    }
+}
+
+inline const char* ToString(MATCHING_STATE state)
+{
+    switch (state)
+    {
+    case MATCH_FOUND:    return "MATCH_FOUND";
+    case MATCH_CANCELED: return "MATCH_CANCELED";
+    default:             return "UNKNOWN_MATCHING_STATE";
+    }
+}
+
+inline const char* ToString(GAME_RESULT result)
+{
+    switch (result)
+    {
+    case WIN:             return "WIN";
+    case LOSE:            return "LOSE";
+    case WIN_TIMEOUT:     return "WIN_TIMEOUT";
+    case LOSE_TIMEOUT:    return "LOSE_TIMEOUT";
+    case WIN_DISCONNECT:  return "WIN_DISCONNECT";
+    case LOSE_DISCONNECT: return "LOSE_DISCONNECT";
+    default:              return "UNKNOWN_GAME_RESULT";
+    }
+}

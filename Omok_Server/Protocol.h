@@ -1,5 +1,7 @@
 #pragma once
 
+constexpr unsigned short MAX_ID_LENGTH = 10;
+
 enum PACKET_ID : char
 {
 	// Client to Server
@@ -16,21 +18,48 @@ enum PACKET_ID : char
 	SC_GAMERESULT
 };
 
+enum LOGIN_RESULT : char
+{
+	LOGIN_SUCCESS = 0,
+	LOGIN_FAIL
+};
+
+enum QUEUE_STATE : char
+{
+	QUEUE_ENTER = 0,
+	QUEUE_CANCEL
+};
+
+enum MATCHING_STATE : char
+{
+	MATCH_FOUND = 0,
+	MATCH_CANCELED
+};
+
+enum GAME_RESULT : char
+{
+	WIN = 0,
+	LOSE,
+	WIN_TIMEOUT,
+	LOSE_TIMEOUT,
+	WIN_DISCONNECT,
+	LOSE_DISCONNECT
+};
+
 #pragma pack(push, 1)
 
 struct CS_LOGIN_PACKET
 {
 	unsigned short size;
 	PACKET_ID packetId;
-	char id[10]; // todo: 최대 글자수, constexpr으로 뺄 것
-	char pw[10];
+	char id[MAX_ID_LENGTH]; // todo: 최대 글자수, constexpr으로 뺄 것
 };
 
 struct CS_QUEUE_PACKET // 매칭 관련 패킷
 {
 	unsigned short size;
 	PACKET_ID packetId;
-	bool bEnqueue = true; // 매칭 취소인지 확인
+	QUEUE_STATE queueState;
 };
 
 struct CS_MATCHING_RESPONSE_PACKET
@@ -43,7 +72,6 @@ struct CS_PLAYTURN_PACKET // 이번 턴의 돌을 어디에 넣는지
 {
 	unsigned short size;
 	PACKET_ID packetId;
-	bool bReturn = false; // todo: 만약.. 무르기를 넣는다면?
 	unsigned short x;
 	unsigned short y;
 };
@@ -54,38 +82,38 @@ struct SC_LOGIN_RESULT_PACKET
 {
 	unsigned short size;
 	PACKET_ID packetId;
-	bool bSuccess = true; // 로그인 성공했는지.
+	LOGIN_RESULT loginResult; // 로그인 결과값
 };
 
-// 흠 여기를 큐잡힘 -> 잡혔다 보내고 -> 클라가 바로 응답 -> 그 응답 후 룸 생성.
-// 이렇게 하면 안정적일 것 같군
-struct SC_GAMEMATCHING_PACKET // 게임이 잡혔음 or 매칭취소.
+struct SC_MATCHING_PACKET // 게임이 잡혔음 or 매칭취소.
 {
 	unsigned short size;
 	PACKET_ID packetId;
-	bool bSuccess = true; // false일 때 매칭취소된 것
+	MATCHING_STATE matchingResult;
 };
 
 struct SC_JOINROOM_PACKET
 {
 	unsigned short size;
 	PACKET_ID packetId;
-	char otherId[10];
+	char otherId[MAX_ID_LENGTH];
+	bool bMyTurn;
 };
 
 struct SC_PLAYTURN_PACKET
 {
 	unsigned short size;
 	PACKET_ID packetId;
-	unsigned short otherX;
-	unsigned short otherY;
+	unsigned short x;
+	unsigned short y;
+	bool bMyTurn;
 };
 
 struct SC_GAMERESULT_PACKET
 {
 	unsigned short size;
 	PACKET_ID packetId;
-	bool bWin = false;
+	GAME_RESULT gameResult;
 };
 
 #pragma pack(pop)
