@@ -367,7 +367,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 591623135}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: RestartGame
         m_Mode: 1
@@ -617,7 +617,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 591623136}
-  - component: {fileID: 591623135}
+  - component: {fileID: 591623137}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -625,22 +625,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &591623135
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 591623134}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c50714cb159d4748a6d1ec21d58c6c8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  boardRenderer: {fileID: 633803760}
-  turnText: {fileID: 787816176}
-  winPanel: {fileID: 486658505}
-  winText: {fileID: 657762885}
 --- !u!4 &591623136
 Transform:
   m_ObjectHideFlags: 0
@@ -656,6 +640,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &591623137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 591623134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d4756137076df7438b1f558d8fbf261, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myIdText: {fileID: 0}
+  otherIdText: {fileID: 0}
+  myColorText: {fileID: 0}
+  turnText: {fileID: 787816176}
+  resultText: {fileID: 787816176}
+  boardRenderer: {fileID: 633803760}
 --- !u!1 &633803759
 GameObject:
   m_ObjectHideFlags: 0

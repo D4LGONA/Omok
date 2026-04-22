@@ -6,9 +6,6 @@ constexpr int ACCEPT_DEPTH = 16;
 HANDLE g_iocp_handle;
 SOCKET g_server;
 
-std::queue<int> g_matchingQueue;
-std::mutex g_queueLock;
-
 std::array<Session, MAX_USER> Sessions{};
 std::array<EXT_OVER, ACCEPT_DEPTH> g_acceptContexts{};
 

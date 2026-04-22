@@ -25,12 +25,21 @@ public class InputHandler : MonoBehaviour
 
         if (boardRenderer.WorldToGrid(worldPos, out int gx, out int gy))
         {
-            GameManager.Instance.OnCellClicked(gx, gy);
+            if (GameSceneManager.Instance != null)
+            {
+                GameSceneManager.Instance.TryPlaceStone((ushort)gx, (ushort)gy);
+            }
         }
     }
 
     private void UpdateGhostPreview()
     {
+        if (GameSceneManager.Instance == null || !GameSceneManager.Instance.CanPlaceStone())
+        {
+            boardRenderer.HideGhost();
+            return;
+        }
+
         Vector3 mouse = Input.mousePosition;
         mouse.z = -mainCam.transform.position.z;
 

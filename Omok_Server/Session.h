@@ -1,12 +1,7 @@
 #pragma once
 #include "stdafx.h"
-#include <string>
-#include <atomic>
-#include <winsock2.h>
 #include "Protocol.h"
-#include <queue>
-#include <vector>
-#include <mutex>
+#include "MatchManager.h"
 
 // Session lifecycle states
 enum class SESSION_STATE
@@ -29,7 +24,9 @@ public:
     std::atomic<bool> connected = false;
     SESSION_STATE state = SESSION_STATE::FREE;
 
-    std::string id; // ASCII user id
+    std::string id; // user id
+    int matchedSessionId = -1;
+    bool bMatchResponse = false;
 
     static constexpr int PACKET_BUF_SIZE = 4096;
     char packetBuf[PACKET_BUF_SIZE]{};
@@ -47,6 +44,8 @@ public:
 
     void Reset()
     {
+        matchedSessionId = -1;
+        bMatchResponse = false;
         sessionId = -1;
         socket = INVALID_SOCKET;
         connected = false;
@@ -67,6 +66,8 @@ public:
     // Called to close / clean up the session
     void Disconnect()
     {
+        HandleDisconnectMatchQueue(*this);
+        connected = false;
         if (socket != INVALID_SOCKET)
         {
             closesocket(socket);

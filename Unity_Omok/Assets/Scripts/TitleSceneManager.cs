@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class TitleSceneManager : MonoBehaviour
 {
@@ -34,6 +35,10 @@ public class TitleSceneManager : MonoBehaviour
         }
 
         NetworkClient.Instance.Connect();
+
+        if (GameSession.Instance != null)
+            GameSession.Instance.SetPlayerId(id);
+
         NetworkClient.Instance.SendLogin(id);
     }
 
@@ -124,6 +129,24 @@ public class TitleSceneManager : MonoBehaviour
     public void OnJoinRoom(string otherId, bool bMyTurn)
     {
         Debug.Log($"·ë ÀÔÀå: »ó´ë={otherId}, ³» Â÷·Ê={bMyTurn}");
+
+        if (GameSession.Instance != null)
+        {
+            GameSession.Instance.SetOtherPlayerId(otherId);
+            GameSession.Instance.SetMatched(true);
+            GameSession.Instance.SetMyTurn(bMyTurn);
+
+            if (bMyTurn)
+            {
+                GameSession.Instance.SetMyColor("Black");
+                GameSession.Instance.SetOtherColor("White");
+            }
+            else
+            {
+                GameSession.Instance.SetMyColor("White");
+                GameSession.Instance.SetOtherColor("Black");
+            }
+        }
 
         if (titleUI != null)
             titleUI.OnMatched();

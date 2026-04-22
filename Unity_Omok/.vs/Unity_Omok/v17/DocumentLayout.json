@@ -3,40 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\packethandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\packethandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\networkclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\networkclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|c:\\users\\user\\onedrive\\\uBC14\uD0D5 \uD654\uBA74\\unity_omok\\unity_omok\\assets\\scripts\\titlescenemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\titlescenemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|c:\\users\\user\\onedrive\\\uBC14\uD0D5 \uD654\uBA74\\unity_omok\\unity_omok\\assets\\scripts\\titleui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\titleui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\clientpacketbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\clientpacketbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\network\\protocol.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\network\\protocol.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\cameracontroller2d.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\cameracontroller2d.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\inputhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\inputhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\gamesession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\gamesession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\network\\packethandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\network\\packethandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\gamescenemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\gamescenemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\boardrenderer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -47,8 +27,32 @@
       "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\board.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\gamesession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\gamesession.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\titleui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\titleui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\network\\networkclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\network\\networkclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\network\\protocol.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\network\\protocol.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\cameracontroller2d.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E85CF49A-062F-B2BD-260D-00F509021C9B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\cameracontroller2d.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\clientpacketbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:assets\\scripts\\clientpacketbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\assets\\scripts\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:assets\\scripts\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -58,24 +62,36 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
+              "Title": "GameSceneManager.cs",
+              "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\GameSceneManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\GameSceneManager.cs",
+              "ToolTip": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\GameSceneManager.cs",
+              "RelativeToolTip": "Assets\\Scripts\\GameSceneManager.cs",
+              "ViewState": "AgIAAKYAAAAAAAAAAAAIwMEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-20T09:33:33.57Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "TitleSceneManager.cs",
               "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\TitleSceneManager.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\TitleSceneManager.cs",
               "ToolTip": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\TitleSceneManager.cs",
               "RelativeToolTip": "Assets\\Scripts\\TitleSceneManager.cs",
-              "ViewState": "AgIAAF8AAAAAAAAAAAAAwG8AAAA2AAAAAAAAAA==",
+              "ViewState": "AgIAAIEAAAAAAAAAAAAtwCgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-20T05:34:51.3Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 9,
               "Title": "Protocol.cs",
               "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\Network\\Protocol.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Network\\Protocol.cs",
@@ -87,7 +103,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 11,
               "Title": "ClientPacketBuilder.cs",
               "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\ClientPacketBuilder.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\ClientPacketBuilder.cs",
@@ -99,58 +115,55 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "NetworkClient.cs",
-              "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\NetworkClient.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\NetworkClient.cs",
-              "ToolTip": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\NetworkClient.cs",
-              "RelativeToolTip": "Assets\\Scripts\\NetworkClient.cs",
-              "ViewState": "AgIAAKwAAAAAAAAAAAAAwLoAAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-09T04:36:18.282Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "PacketHandler.cs",
-              "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\PacketHandler.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\PacketHandler.cs",
-              "ToolTip": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\PacketHandler.cs",
-              "RelativeToolTip": "Assets\\Scripts\\PacketHandler.cs",
-              "ViewState": "AgIAAEUAAAAAAAAAAAAIwFIAAAA1AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-08T09:01:58.255Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 8,
+              "Title": "NetworkClient.cs",
+              "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\Network\\NetworkClient.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Network\\NetworkClient.cs",
+              "ToolTip": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\Network\\NetworkClient.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Network\\NetworkClient.cs",
+              "ViewState": "AgIAAKwAAAAAAAAAAAAAwMAAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-09T04:36:18.282Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PacketHandler.cs",
+              "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\Network\\PacketHandler.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Network\\PacketHandler.cs",
+              "ToolTip": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\Network\\PacketHandler.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Network\\PacketHandler.cs",
+              "ViewState": "AgIAAGwAAAAAAAAAAAAjwH0AAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-08T09:01:58.255Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "GameSession.cs",
               "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\GameSession.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\GameSession.cs",
               "ToolTip": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\GameSession.cs",
               "RelativeToolTip": "Assets\\Scripts\\GameSession.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAADEAAAAAAAAAAAAUwEIAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-08T09:01:38.057Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 7,
               "Title": "TitleUI.cs",
               "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\TitleUI.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\TitleUI.cs",
               "ToolTip": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\TitleUI.cs",
               "RelativeToolTip": "Assets\\Scripts\\TitleUI.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAG8AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-08T08:57:18.341Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-08T08:57:18.341Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 10,
               "Title": "CameraController2D.cs",
               "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\CameraController2D.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\CameraController2D.cs",
@@ -162,49 +175,49 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 1,
               "Title": "InputHandler.cs",
               "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\InputHandler.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\InputHandler.cs",
               "ToolTip": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\InputHandler.cs",
               "RelativeToolTip": "Assets\\Scripts\\InputHandler.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAIwCQAAAA0AAAAAAAAAA==",
+              "ViewState": "AgIAABsAAAAAAAAAAAAIwCUAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-07T00:45:09.937Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 4,
               "Title": "BoardRenderer.cs",
               "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\BoardRenderer.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\BoardRenderer.cs",
               "ToolTip": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\BoardRenderer.cs",
               "RelativeToolTip": "Assets\\Scripts\\BoardRenderer.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEQAAAAlAAAAAAAAAA==",
+              "ViewState": "AgIAAGoAAAAAAAAAAADwv4MAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-07T00:44:45.816Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 5,
               "Title": "Board.cs",
               "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\Board.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Board.cs",
               "ToolTip": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\Board.cs",
               "RelativeToolTip": "Assets\\Scripts\\Board.cs",
-              "ViewState": "AgIAABYAAAAAAAAAAAAUwCIAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD4AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-07T00:43:58.313Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "GameManager.cs",
               "DocumentMoniker": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\GameManager.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\GameManager.cs",
               "ToolTip": "C:\\Users\\User\\OneDrive\\\uBC14\uD0D5 \uD654\uBA74\\Unity_Omok\\Unity_Omok\\Assets\\Scripts\\GameManager.cs",
               "RelativeToolTip": "Assets\\Scripts\\GameManager.cs",
-              "ViewState": "AgIAAD0AAAAAAAAAAAAmwEsAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAADgAAAAAAAAAAAAkwEsAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-07T00:42:31.199Z"
             }

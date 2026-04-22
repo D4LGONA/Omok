@@ -105,8 +105,13 @@ public static class PacketHandler
         ushort y = BitConverter.ToUInt16(packet, 5);
         bool bMyTurn = packet[7] != 0;
 
+        if (GameSession.Instance != null)
+            GameSession.Instance.SetMyTurn(bMyTurn);
+
         Debug.Log($"착수 좌표: ({x}, {y}), 이제 내 차례: {bMyTurn}");
 
+        if (GameSceneManager.Instance != null)
+            GameSceneManager.Instance.OnStonePlaced(x, y, bMyTurn);
     }
 
     private static void HandleGameResult(byte[] packet)
@@ -120,32 +125,8 @@ public static class PacketHandler
         Protocol.GAME_RESULT result = (Protocol.GAME_RESULT)packet[3];
         Debug.Log("게임 결과: " + result);
 
-        switch (result)
-        {
-            case Protocol.GAME_RESULT.WIN:
-                Debug.Log("승리");
-                break;
-
-            case Protocol.GAME_RESULT.LOSE:
-                Debug.Log("패배");
-                break;
-
-            case Protocol.GAME_RESULT.WIN_TIMEOUT:
-                Debug.Log("시간 초과 승리");
-                break;
-
-            case Protocol.GAME_RESULT.LOSE_TIMEOUT:
-                Debug.Log("시간 초과 패배");
-                break;
-
-            case Protocol.GAME_RESULT.WIN_DISCONNECT:
-                Debug.Log("상대 연결 종료로 승리");
-                break;
-
-            case Protocol.GAME_RESULT.LOSE_DISCONNECT:
-                Debug.Log("연결 종료로 패배");
-                break;
-        }
+        if (GameSceneManager.Instance != null)
+            GameSceneManager.Instance.OnGameResult(result);
     }
 
     private static string ReadFixedString(byte[] packet, int offset, int length)

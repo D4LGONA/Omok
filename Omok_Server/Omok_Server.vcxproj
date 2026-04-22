@@ -125,10 +125,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MatchManager.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="Session.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MatchManager.h" />
     <ClInclude Include="Protocol.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Session.h" />

@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "Session.h"
+#include "MatchManager.h"
 
 void Session::SendLoginResult(bool success)
 {
@@ -133,24 +134,29 @@ void Session::ProcessPacket(char* packet, int size)
     {
     case CS_LOGIN:
     {
-        CS_LOGIN_PACKET* pkt = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
-        id = std::string(pkt->id, strnlen(pkt->id, sizeof(pkt->id)));
-        std::cout << "[CS_LOGIN] session id=" << id << std::endl;
+        const CS_LOGIN_PACKET& pkt = *reinterpret_cast<CS_LOGIN_PACKET*>(packet);
+
+        id = std::string(pkt.id, strnlen(pkt.id, sizeof(pkt.id)));
+        state = SESSION_STATE::LOGIN_OK;
+
+        std::cout << "[CS_LOGIN] sessionId=" << sessionId
+            << " userId=" << id << std::endl;
 
         SendLoginResult(true);
         break;
     }
     case CS_QUEUE:
     {
-        CS_QUEUE_PACKET* pkt = reinterpret_cast<CS_QUEUE_PACKET*>(packet);
-        
-        std::cout << "[CS_QUEUE] session id=" << id << ", " << ToString(pkt->queueState) << std::endl;
+        CS_QUEUE_PACKET& pkt = *reinterpret_cast<CS_QUEUE_PACKET*>(packet);
+        HandleQueuePacket(*this, pkt);
         break;
     }
     case CS_MATCHING_RESPONSE:
-        std::cout << "[CS_MATCHING_RESPONSE] session id=" << id << std::endl;
+    {
+        CS_MATCHING_RESPONSE_PACKET& pkt = *reinterpret_cast<CS_MATCHING_RESPONSE_PACKET*>(packet);
+        HandleMatchingResponse(*this, pkt);
         break;
-
+    }
     case CS_PLAYTURN:
         std::cout << "[CS_PLAYTURN] session id=" << id << std::endl;
         break;
